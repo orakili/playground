@@ -1,0 +1,110 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+
+#header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 30px;
+}
+#container {
+  position: relative;
+  width: 660px;
+  margin: 0 auto;
+}
+
+h2 {
+  position: absolute;
+  top: 80px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  text-align: center;
+  width: 240px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+a {
+  text-decoration: none;
+}
+
+.globe {
+  stroke: none;
+  fill: #e9eef9;
+}
+.circle {
+  stroke: #000;
+  fill: none;
+}
+.countries {
+  stroke: none;
+  fill: #fff;
+}
+.country {
+  stroke: none;
+  fill: none;
+}
+.country.active {
+  fill: #f00;
+}
+.boundaries {
+  stroke: #000;
+  stroke-width: 0.2;
+  stroke-opacity: 0.5;
+  fill: none;
+}
+.boundaries.dashed {
+  stroke-dasharray: 2,2;
+}
+.boundaries.dotted {
+  stroke-dasharray: 1;
+}
+.graticule {
+  stroke: #ddd;
+  stroke-opacity: 0.2;
+  fill: none;
+}
+
+.headlines-container {
+  display: inline-block;
+  width: 400px;
+  height: 200px;
+  overflow: hidden;
+  vertical-align: top;
+  margin-left: 20px;
+  position: relative;
+  margin-top: 30px;
+}
+.headlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.headlines h3 {
+  font-size: 16px;
+}
+.headlines p {
+  font-size: 14px;
+}
+.headlines img {
+  float: right;
+  width: 100px;
+  margin-left: 5px;
+  padding: 1px;
+  border: 1px solid black;
+}
+.headline {
+  height: 200px;
+}
+.headline h3 {
+  margin: 0;
+  padding: 10px 0;
+}
+.headline h3 a {
+  color: #29a4d9;
+}
+.headline > div,
+.headline > div a {
+  color: #999;
+  font-size: 12px;
+}
