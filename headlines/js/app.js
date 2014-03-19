@@ -49,6 +49,8 @@
 
   var graticule = d3.geo.graticule();
 
+  var spinner = new Spinner().spin(document.getElementById('container'));
+
   queue()
       .defer(d3.json, 'data/un.world.topojson')
       .defer(d3.json, 'data/un.world.boundaries.topojson')
@@ -125,6 +127,8 @@
     var background = svg.append('g').attr('class', 'background');
     var content = svg.append('g').attr('class', 'content');
     var foreground = svg.append('g').attr('class', 'foreground');
+
+    spinner.stop();
 
     background.append('path')
         .datum({type: 'Sphere'})
