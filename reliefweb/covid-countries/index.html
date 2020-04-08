@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RW Countries with COVID-19 reports</title>
+</head>
+<style>
+html {
+  font-family: helvetica, sans-serif;
+  font-size: 16px;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+}
+a, a:hover {
+  color: #055372;
+  padding: 3px;
+}
+input[type="search"] {
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: inherit;
+  padding: 8px;
+  min-width: 40%;
+  border: 2px solid #e6ecef;
+  background: white;
+}
+button {
+  margin: 0;
+  padding: 8px 12px;
+  border: none;
+  background: #055372;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover,
+button:active,
+button:focus {
+  text-decoration: underline;
+}
+form > * {
+  margin-bottom: 16px;
+}
+table {
+  margin-top: 16px;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+}
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+<body>
+
+<form id="form">
+  <div>
+    <label for="search">Search query</label>
+    <input id="search" name="search" value="title:COVID" type="search">
+  </div>
+  <div>
+    <label><input type="radio" name="field" value="primary_country" checked>Primary country</label>
+    <label><input type="radio" name="field" value="country">Any country</label>
+  </div>
+  <button type="submit">Search</button>
+</form>
+
+<p>Totals: <strong id="total-countries"></strong> &mdash; <strong id="total-reports"></strong></p>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Count</th></tr>
+  </thead>
+  <tbody id="table-content">
+  </tbody>
+</table>
+
+<script>
+  (function () {
+    const form = document.getElementById('form');
+    const table = document.getElementById('table-content');
+    const totalCountries = document.getElementById('total-countries');
+    const totalReports = document.getElementById('total-reports');
+
+    const api = 'https://api.reliefweb.int/v1/';
+    const payload = {
+      query: {
+        value: ''
+      },
+      facets: [
+        {
+          name: 'countries',
+          field: 'country.name',
+          limit: 1000,
+          sort: 'value:asc'
+        }
+      ],
+      limit: 0
+    }
+
+    var countries = null;
+
+    function createElement(tag, attributes, content) {
+      var element = document.createElement(tag);
+      if (attributes) {
+        for (var attribute in attributes) {
+          if (attributes.hasOwnProperty(attributes)) {
+            element.setAttribute(attribute, attributes[attribute]);
+          }
+        }
+      }
+      if (typeof content !== 'undefined') {
+        content = Array.isArray(content) ? content : [content];
+        for (var i = 0, l = content.length; i < l; i++) {
+          var child = content[i];
+          if (typeof child === 'string') {
+            element.appendChild(document.createTextNode(child));
+          }
+          else if (typeof child === 'object') {
+            element.appendChild(child);
+          }
+        }
+      }
+      return element;
+    }
+
+    async function queryAPI(endpoint, payload) {
+      let response = await fetch(api + endpoint + '?appname=rwint-data&slim=1', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      let data = await response.json();
+      return data || {};
+    }
+
+    async function getCountries() {
+      if (countries === null) {
+        let data = await queryAPI('countries', {
+          fields: {
+            include: ['name', 'id']
+          },
+          limit: 1000
+        });
+
+        countries = {};
+        data.data.forEach(item => {
+          countries[item.fields.name] = 'https://reliefweb.int/taxonomy/term/' + item.fields.id;
+        });
+      }
+      return countries;
+    }
+
+    async function getData() {
+      document.body.classList.add('loading');
+
+      let countries = await getCountries();
+
+      payload.query.value = form.search.value;
+      payload.facets[0].field = form.field.value;
+
+      let data = await queryAPI('reports', payload);
+
+      while (table.lastChild) {
+        table.removeChild(table.lastChild);
+      }
+
+      data.embedded.facets.countries.data.forEach(entry => {
+        let url = countries[entry.value];
+
+        table.appendChild(createElement('tr', {}, [
+          createElement('td', {}, [
+            createElement('a', {href: url}, entry.value)
+          ]),
+          createElement('td', {}, [String(entry.count)])
+        ]));
+      });
+
+      totalCountries.textContent = data.embedded.facets.countries.data.length + ' countries';
+      totalReports.textContent = data.totalCount + ' reports';
+
+      document.body.classList.remove('loading');
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      getData();
+    });
+
+    getData();
+  })();
+</script>
+
+</body>
+</html>
