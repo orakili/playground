@@ -8,11 +8,16 @@
 <body>
   <script src="https://cdn.jsdelivr.net/npm/loadjs@4.2.0/dist/loadjs.min.js"></script>
   <script>
-    loadjs(['https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2.4.8/dist/css-vars-ponyfill.min.js'], 'css-vars-ponyfill', {
+    loadjs(['dep1.js', 'dep2.js', 'dep3.js'], 'css-vars-ponyfill', {
       async: false,
       before: function(path, scriptEl) {
         console.log(path);
-        scriptEl.setAttribute('nomodule', '');
+        if (path === 'dep1.js') {
+          scriptEl.setAttribute('type', 'module');
+        }
+        else if (path === 'dep2.js') {
+          scriptEl.setAttribute('nomodule', '');
+        }
         return false;
       }
     });
