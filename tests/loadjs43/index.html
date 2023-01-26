@@ -8,15 +8,17 @@
 <body>
   <script src="https://cdn.jsdelivr.net/npm/loadjs@4.3.0-rc1/dist/loadjs.min.js"></script>
   <script>
-    loadjs(['module!dep1.js', 'nomodule!dep2.js', 'dep3.js'], 'css-vars-ponyfill', {
-      async: false,
-      before: function(path, scriptEl) {
-        console.log(path);
-        return false;
-      }
+    var deps = ['module!dep1.js', 'nomodule!dep2.js', 'dep3.js'];
+    deps.forEach(function (dep) {
+      loadjs(dep, dep, {
+        async: false,
+        before: function(path, scriptEl) {
+          console.log(path);
+        }
+      });
     });
 
-    loadjs.ready('css-vars-ponyfill', {
+    loadjs.ready(deps, {
       success: function() {
         console.log('success');
       },
